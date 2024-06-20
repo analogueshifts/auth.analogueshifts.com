@@ -1,11 +1,10 @@
-import LoginForm from "./login-form";
 import AuthenticationLayout from "@/components/application/layouts/authentication";
+import EmailVerificationForm from "./components/email-verification-form";
 
-export default function Home() {
+export default function Page() {
   return (
     <AuthenticationLayout>
-      {/* Form */}
-      <LoginForm />
+      <EmailVerificationForm />
     </AuthenticationLayout>
   );
 }
