@@ -75,41 +75,46 @@
   }
 }
 
-.lds-ellipsis,
-.lds-ellipsis div {
-  box-sizing: border-box;
+.login-card {
+  box-shadow: 0px 106.29px 503.27px 0px rgba(255, 187, 10, 0.04),
+    0px 62.58px 262.51px 0px rgba(0, 0, 0, 0.02),
+    0px 32.14px 123.2px 0px rgba(0, 0, 0, 0.0449),
+    0px 12.92px 53.95px 0px rgba(0, 0, 0, 0.0351),
+    0px 2.89px 23.35px 0px rgba(0, 0, 0, 0.0221);
 }
-.lds-ellipsis {
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
+
+.form-dropdown {
+  box-shadow: 0px 4px 67.76px 0px #00000009;
+  box-shadow: 0px 20px 417px 0px #00000012;
 }
-.lds-ellipsis div {
-  position: absolute;
-  top: 33.33333px;
-  width: 13.33333px;
-  height: 13.33333px;
-  border-radius: 50%;
-  background: #d5ae35;
-  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
 }
-.lds-ellipsis div:nth-child(1) {
-  left: 8px;
-  animation: lds-ellipsis1 0.6s infinite;
+
+::-webkit-scrollbar {
+  width: 0.1em;
+  background-color: #f5f5f500;
 }
-.lds-ellipsis div:nth-child(2) {
-  left: 8px;
-  animation: lds-ellipsis2 0.6s infinite;
+
+::-webkit-scrollbar-thumb {
+  background-color: #ffbb0a;
 }
-.lds-ellipsis div:nth-child(3) {
-  left: 32px;
-  animation: lds-ellipsis2 0.6s infinite;
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #ffbb0a;
 }
-.lds-ellipsis div:nth-child(4) {
-  left: 56px;
-  animation: lds-ellipsis3 0.6s infinite;
+
+.dropdown-list::-webkit-scrollbar {
+  width: 4px;
+  background-color: #f5f5f500;
 }
+.dropdown-list::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  height: 24px;
+  width: 4px;
+}
+
 @keyframes lds-ellipsis1 {
   0% {
     transform: scale(0);

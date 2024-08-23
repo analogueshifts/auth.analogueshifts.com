@@ -1,22 +1,35 @@
 "use client";
-
+import { useAuth } from "@/hooks/auth";
+import { useToast } from "@/contexts/toast";
 import { useState, useEffect, FormEvent } from "react";
-
+import Cookies from "js-cookie";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-
-import { errorToast, successToast } from "@/utils/toast";
-import LoadingSpinner from "@/components/application/loading-spinner";
+import Image from "next/image";
+import Spinner from "@/assets/images/spinner.svg";
+import ShowStatus from "./show-status";
+import { useRouter } from "next/navigation";
 
 export default function EmailVerificationForm() {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [user, setUser]: any = useState(null);
   const [timeLeft, setTimeLeft] = useState(120);
   const [isCoutDown, setIsCountDown] = useState(true);
+  const [status, setStatus] = useState("");
+
+  const { sendOTP, validateOTP } = useAuth();
+  const { notifyUser }: any = useToast();
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
 
   // Check if the user is in countDown Mode, if so, decrement the counter.
   // If the counter is = 0, remove the user from countDown mode.
@@ -44,142 +57,111 @@ export default function EmailVerificationForm() {
   const seconds = timeLeft % 60;
 
   // Handle Resend Verification Code
-  const resendVerificationCode = () => {
-    const axios = require("axios");
-    const url =
-      process.env.NEXT_PUBLIC_BACKEND_URL + "/email/verification-notification";
-    let config = {
-      url: url,
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + user?.token,
-      },
-    };
-
-    setLoading(true);
-
-    axios
-      .request(config)
-      .then((res: any) => {
-        // Start the timer, so the user wait for 2 minutes before requesting for another code.
-        setLoading(false);
-        setTimeLeft(120);
-        setIsCountDown(true);
-        successToast("Success", "Verification code sent sucessfully!");
-      })
-      .catch((error: any) => {
-        setLoading(false);
-        errorToast("Error", error.message);
-        if (error?.response?.status === 401) {
-          //  Clear The User Session
-        }
-      });
+  const resendVerificationCode = async () => {
+    try {
+      await sendOTP({ setLoading });
+      setTimeLeft(120);
+      setIsCountDown(true);
+      notifyUser("success", "Verification code sent sucessfully!");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Handle Form Submit
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const axios = require("axios");
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/email/verification-otp";
-    let config = {
-      url: url,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + user?.token,
-      },
-      data: { OTP: value },
-    };
-    setLoading(true);
-    axios
-      .request(config)
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          const userData = JSON.stringify({
-            user: { ...res.data.data.user },
-            token: user.token,
-          });
-
-          // If the email verification is successful, update the user session value with the latest user session and navigate to the dashboard
-
-          successToast("Success", "Your email has been verified");
-        } else {
+    try {
+      await validateOTP({
+        otp: value,
+        setLoading,
+        handleError: () => {
           setValue("");
-          errorToast("Invalid OTP", "The OTP is InCorrect");
-        }
-      })
-      .catch((error: any) => {
-        setLoading(false);
-        setValue("");
-        errorToast(
-          "Invalid OTP",
-          error?.response?.data?.message || error.message || ""
-        );
-        if (error?.response?.status === 401) {
-          //    Clear User Session
-        }
+          setStatus("error");
+        },
+        handleSuccess: () => {
+          setValue("");
+          setStatus("success");
+        },
       });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      method="post"
-      className="pt-7 w-full flex flex-col"
-    >
-      {loading && <LoadingSpinner />}
-      <p className="font-bold text-2xl text-[#292929] pb-5">
-        Email verification
-      </p>
-      <p className="font-medium text-[15px] text-tremor-content-grayText pb-4">
-        Please enter the 5 digit verification code sent to your email address.
-        Didn&apos;t receive a code?{" "}
-        {isCoutDown ? (
-          <>
-            you can request for a new code after{" "}
-            <b>
-              {minutes < 10 ? `0${minutes}` : minutes}:
-              {seconds < 10 ? `0${seconds}` : seconds}
-            </b>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={resendVerificationCode}
-              type="button"
-              className="outline-none bg-none border-none font-bold"
-            >
-              Request new code
-            </button>
-          </>
-        )}
-      </p>
-
-      <div className="w-full pb-5 flex flex-col gap-2.5">
-        <p className="text-base font-normal text-tremor-content-grayText">
-          OTP
-        </p>
-        <InputOTP
-          maxLength={5}
-          value={value}
-          onChange={(value) => setValue(value)}
+    <>
+      {status === "" ? (
+        <form
+          onSubmit={handleSubmit}
+          className="w-full h-full pb-10 overflow-y-auto flex justify-center px-6 large:pt-[112px] pt-[56px]"
         >
-          <InputOTPGroup className="gap-3">
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-          </InputOTPGroup>
-        </InputOTP>
-      </div>
-      <button
-        type="submit"
-        className="w-full bg-tremor-background-lightYellow font-semibold text-base text-[#FDFAEF] flex items-center justify-center hover:bg-tremor-background-lightYellow/80 duration-300 h-12 rounded-2xl "
-      >
-        Submit
-      </button>
-    </form>
+          <div className="w-[540px] h-max max-w-full flex flex-col items-center">
+            <h2 className="w-max text-center leading-48 large:leading-[60px] text-black font-semibold large:text-32 text-2xl mb-2">
+              OTP Verification
+            </h2>
+
+            <p className="w-max max-w-full font-normal text-tremor-content-boulder400 large:text-xl text-base text-center mb-9 large:mb-12">
+              Enter the verification code we just sent on your email.
+              Didn&apos;t receive a code?{" "}
+              {isCoutDown ? (
+                <>
+                  you can request for a new code after{" "}
+                  <span className="font-semibold">
+                    {minutes < 10 ? `0${minutes}` : minutes}:
+                    {seconds < 10 ? `0${seconds}` : seconds}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={resendVerificationCode}
+                    type="button"
+                    className="outline-none bg-none border-none font-semibold"
+                  >
+                    Request new code
+                  </button>
+                </>
+              )}
+            </p>
+
+            <InputOTP
+              className="w-full"
+              value={value}
+              onChange={(e) => setValue(e)}
+              maxLength={4}
+            >
+              <InputOTPGroup className="grid w-full lg:w-[500px] large:w-[540px] tablet:w-full max-w-full grid-cols-4 gap-3.5">
+                {[0, 1, 2, 3].map((item) => {
+                  return (
+                    <InputOTPSlot
+                      key={item}
+                      className="border min-w-full w-16 lg:w-full text-[#292929] col-span-1 rounded-[10px] h-16  text-[18px] large:text-[30px] font-bold"
+                      index={item}
+                    />
+                  );
+                })}
+              </InputOTPGroup>
+            </InputOTP>
+            <button
+              type="submit"
+              disabled={value.length < 4}
+              className={`w-full bg-tremor-content-asYellow large:h-[60px] h-12 rounded-[20px] flex justify-center items-center text-sm large:text-base font-semibold text-tremor-content-light mt-7 large:mt-10 ${
+                value.length < 4 ? "opacity-50" : "opacity-100"
+              }`}
+            >
+              {!loading && "Verify email"}{" "}
+              <Image
+                src={Spinner}
+                alt=""
+                className={`animate-spin ${loading ? "flex" : "hidden"}`}
+              />
+            </button>
+          </div>
+        </form>
+      ) : (
+        <ShowStatus handleRetry={() => setStatus("")} status={status} />
+      )}
+    </>
   );
 }
