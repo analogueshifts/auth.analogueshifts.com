@@ -1,5 +1,4 @@
 "use client";
-import LoadingSpinner from "@/components/application/loading-spinner";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, FormEvent } from "react";
 import {
@@ -7,9 +6,6 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { errorToast, successToast } from "@/utils/toast";
-import FormInput from "@/components/application/form-input";
-import { Mail, Lock } from "lucide-react";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -76,14 +72,11 @@ export default function ResetPasswordForm() {
         setLoading(false);
         setTimeLeft(120);
         setIsCountDown(true);
-        successToast("Success", "Verification code sent sucessfully!");
+        // Toast
       })
       .catch((error: any) => {
         setLoading(false);
-        errorToast(
-          "An Error Occured, Please try again later",
-          error?.response?.data?.message || error.message || ""
-        );
+        // Toast
       });
   };
 
@@ -102,16 +95,13 @@ export default function ResetPasswordForm() {
       const request = await axios.request(config);
       if (!request.data.success) {
         setLoading(false);
-        errorToast("Invalid OTP", "The OTP is InCorrect");
+        //  Toast
       } else {
         await resetPassword();
       }
     } catch (error: any) {
       setLoading(false);
-      errorToast(
-        "Invalid OTP",
-        error?.response?.data?.message || error.message || ""
-      );
+      //  Toast
     }
   };
 
@@ -133,118 +123,36 @@ export default function ResetPasswordForm() {
     };
     try {
       await axios.request(config);
-      successToast("Password Reset Successful", "Redirecting You To Login");
+      // Toast
       router.push("/login");
 
       setLoading(false);
     } catch (error: any) {
       setLoading(false);
-      errorToast(
-        "Failed to reset password",
-        error?.response?.data?.message || error.message || ""
-      );
+      //  Toast
     }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (password !== confirm_password) {
-      errorToast(
-        "Invalid Password",
-        "Password must match with Confirm Password"
-      );
+      // errorToast(
+      //   "Invalid Password",
+      //   "Password must match with Confirm Password"
+      // );
       return;
     }
     try {
       setLoading(true);
       await validateOTP();
     } catch (error: any) {
-      errorToast(
-        "Failed to reset password",
-        error?.response?.data?.message || error.message || ""
-      );
+      // errorToast(
+      //   "Failed to reset password",
+      //   error?.response?.data?.message || error.message || ""
+      // );
+      console.log(error);
     }
   };
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      method="post"
-      className="pt-7 w-full flex flex-col"
-    >
-      {loading && <LoadingSpinner />}
-      <p className="font-bold text-3xl text-[#292929] pb-5">
-        Reset Your Password
-      </p>
-      <p className="font-medium text-[15px] text-tremor-content-grayText pb-4">
-        Enter the 5 digit verification code sent to your email address.
-        Didn&apos;t receive a code?{" "}
-        {isCoutDown ? (
-          <>
-            you can request for a new code after{" "}
-            <b>
-              {minutes < 10 ? `0${minutes}` : minutes}:
-              {seconds < 10 ? `0${seconds}` : seconds}
-            </b>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={resendVerificationCode}
-              type="button"
-              className="outline-none bg-none border-none font-bold"
-            >
-              Request new code
-            </button>
-          </>
-        )}
-      </p>
-
-      <div className="w-full pb-5 flex flex-col gap-2.5">
-        <p className="text-base font-normal text-tremor-content-grayText">
-          OTP
-        </p>
-        <InputOTP maxLength={5} value={otp} onChange={(value) => setOtp(value)}>
-          <InputOTPGroup className="gap-3">
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-          </InputOTPGroup>
-        </InputOTP>
-      </div>
-      <FormInput
-        icon={<Mail width={17} />}
-        type="email"
-        onChange={(e) => setEmail(e.target.value)}
-        label="Email"
-        placeholder="Enter Email"
-        value={email}
-      />
-      <FormInput
-        icon={<Lock width={17} />}
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        label="New Password"
-        placeholder="Enter Password"
-        value={password}
-      />
-      <FormInput
-        icon={<Lock width={17} />}
-        type="password"
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        label="Confirm Password"
-        placeholder="Confirm Password"
-        value={confirm_password}
-      />
-
-      <button
-        type="submit"
-        className="w-full bg-tremor-background-lightYellow font-semibold text-base text-[#FDFAEF] flex items-center justify-center hover:bg-tremor-background-lightYellow/80 duration-300 h-12 rounded-2xl "
-      >
-        Reset Password
-      </button>
-    </form>
-  );
+  return <form></form>;
 }

@@ -1,10 +1,17 @@
 "use client";
-import LoadingSpinner from "@/components/application/loading-spinner";
-import { useState, FormEvent } from "react";
+import { useAuth } from "@/hooks/auth";
+import { useToast } from "@/contexts/toast";
+import { useState, FormEvent, useEffect } from "react";
+
 import Link from "next/link";
-import { successToast, errorToast } from "@/utils/toast";
 import FormInput from "@/components/application/form-input";
-import { Mail, Lock, Text } from "lucide-react";
+import UserImage from "@/assets/images/user.svg";
+import Spinner from "@/assets/images/spinner.svg";
+import Envelope from "@/assets/images/envelope.svg";
+import PadLock from "@/assets/images/padlock.svg";
+import Briefcase from "@/assets/images/grid-two-layout/briefcase.svg";
+import Hire from "@/assets/images/grid-two-layout/hire.svg";
+import Image from "next/image";
 
 export default function RegisterForm() {
   const [first_name, setFirstName] = useState("");
@@ -12,121 +19,170 @@ export default function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm_password, setConfirmPassword] = useState("");
+  const [accountType, setAccountType] = useState("job");
   const [loading, setLoading] = useState(false);
-  const url = process.env.NEXT_PUBLIC_BACKEND_URL + "/register";
+  const { register } = useAuth();
+
+  const [error, setError] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+
+  const { notifyUser }: any = useToast();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
 
     // Check for Confirm Password
     if (password !== confirm_password) {
-      errorToast("Bad Input", "Password Must Match with Confirm Password");
+      notifyUser("Bad error", "Password Must Match with Confirm Password");
+      setError((prev) => {
+        return { ...prev, password: true, confirmPassword: true };
+      });
       return;
     }
 
-    setLoading(true);
-
-    const config: any = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        secret_key: process.env.NEXT_PUBLIC_SECRET_KEY,
-      },
-      body: JSON.stringify({
-        first_name: first_name,
-        last_name: last_name,
-        email: email,
-        password: password,
+    register({
+      setLoading,
+      data: {
+        first_name,
+        last_name,
+        email,
+        password,
         password_confirmation: confirm_password,
         device_token: crypto.randomUUID(),
-      }),
-    };
-
-    try {
-      const res = await fetch(url, config);
-      const data = await res.json();
-      if (data[0].success) {
-        successToast(
-          "Account created successfully",
-          "Redirecting You to your Dashboard."
-        );
-      }
-
-      setLoading(false);
-    } catch (error: any) {
-      setLoading(false);
-      errorToast(
-        "Failed To create Account",
-        error?.response?.data?.message ||
-          error.message ||
-          "Failed To Create Account"
-      );
-    }
+        user_mode: accountType,
+      },
+    });
   }
 
+  useEffect(() => {
+    if (password === confirm_password) {
+      setError((prev) => {
+        return { ...prev, password: false, confirmPassword: false };
+      });
+    }
+  }, [password, confirm_password]);
+
+  const validateFields = () => {
+    return [first_name, last_name, email, password, confirm_password].includes(
+      ""
+    );
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="pt-11 w-full flex flex-col">
-      {loading && <LoadingSpinner />}
-      <p className="font-bold text-3xl text-[#292929] pb-5">
-        Join our Community
-      </p>
-      <FormInput
-        icon={<Text width={17} />}
-        type="text"
-        onChange={(e) => setFirstName(e.target.value)}
-        label="First Name"
-        placeholder="First Name"
-        value={first_name}
-      />
-      <FormInput
-        icon={<Text width={17} />}
-        type="text"
-        onChange={(e) => setLastName(e.target.value)}
-        label="Last Name"
-        placeholder="Last Name"
-        value={last_name}
-      />
-      <FormInput
-        icon={<Mail width={17} />}
-        type="email"
-        onChange={(e) => setEmail(e.target.value)}
-        label="Email"
-        placeholder="Enter Email"
-        value={email}
-      />
-      <FormInput
-        icon={<Lock width={17} />}
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        label="Password"
-        placeholder="Enter Password"
-        value={password}
-      />
-      <FormInput
-        icon={<Lock width={17} />}
-        type="password"
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        label="Confirm Password"
-        placeholder="Enter Password"
-        value={confirm_password}
-      />
-      <button
-        type="submit"
-        className="w-full bg-tremor-background-lightYellow font-semibold text-base text-[#FDFAEF] flex items-center justify-center hover:bg-tremor-background-lightYellow/80 duration-300 h-12 rounded-2xl "
-      >
+    <form
+      onSubmit={handleSubmit}
+      className="w-full h-full pb-10 overflow-y-auto flex flex-col items-center px-6 large:pt-[112px] pt-[56px]"
+    >
+      <h2 className="w-max text-center text-black font-semibold large:text-32 text-2xl mb-2">
         Sign Up
-      </button>
-      <div className="w-full pt-4 flex justify-center items-center gap-1">
-        <p className="font-normal text-sm text-black/90">
-          Already have an account?
-        </p>
-        <Link
-          href="/"
-          className="font-normal text-sm text-tremor-background-lightYellow"
-        >
-          Sign In
+      </h2>
+      <p className="w-max font-normal text-tremor-content-boulder400 large:text-xl text-base text-center flex justify-center h-max large:mb-12 mb-9">
+        Already have an account?&nbsp;{" "}
+        <Link href="/login" className="text-tremor-content-asYellow">
+          Login
         </Link>
+      </p>
+      <div className="w-[500px] large:mb-8 mb-6 max-w-full flex flex-wrap gap-x-5 gap-y-[27px]">
+        <div className="w-[calc(50%-10px)]">
+          <FormInput
+            image={UserImage}
+            label="First Name"
+            placeholder="First Name"
+            value={first_name}
+            onChange={setFirstName}
+            type="text"
+            error={error.firstName}
+          />
+        </div>
+        <div className="w-[calc(50%-10px)]">
+          <FormInput
+            image={UserImage}
+            label="Last Name"
+            placeholder="Last Name"
+            value={last_name}
+            onChange={setLastName}
+            type="text"
+            error={error.lastName}
+          />
+        </div>
+        <FormInput
+          image={Envelope}
+          label="Email"
+          placeholder="your email address"
+          value={email}
+          onChange={setEmail}
+          type="email"
+          error={error.email}
+        />{" "}
+        <FormInput
+          image={PadLock}
+          label="Password"
+          placeholder="input password"
+          value={password}
+          onChange={setPassword}
+          type="password"
+          error={error.password}
+        />
+        <FormInput
+          image={PadLock}
+          label="Confirm Password"
+          placeholder="input password"
+          value={confirm_password}
+          onChange={setConfirmPassword}
+          type="password"
+          error={error.confirmPassword}
+        />
+      </div>
+      <div className="w-[500px]  max-w-full flex flex-col gap-3 large:gap-4">
+        <p className="large:text-base text-sm font-normal text-tremor-content-grayText">
+          Account Type
+        </p>
+        <div className="w-full grid grid-cols-2 gap-6 mb-7 large:mb-10">
+          {["job", "hire"].map((item: string) => {
+            return (
+              <button
+                key={item}
+                onClick={() => setAccountType(item)}
+                type="button"
+                className={`col-span-1 h-40 flex flex-col items-center justify-center gap-2.5 large:h-[196px] rounded-2xl border ${
+                  accountType === item
+                    ? "border-tremor-content-asYellow"
+                    : "border-tremor-border-boulder200"
+                }`}
+              >
+                <Image src={item === "job" ? Briefcase : Hire} alt="" />
+                <p
+                  className={`large:text-base text-sm font-normal ${
+                    accountType === item
+                      ? "text-tremor-content-asYellow"
+                      : "text-tremor-content-grayText"
+                  }`}
+                >
+                  {item === "job" ? "Job Seeker" : "Recruiter"}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+        <button
+          type="submit"
+          disabled={validateFields()}
+          className={`w-full bg-tremor-content-asYellow large:h-[60px] h-12 rounded-[20px] flex justify-center items-center text-sm large:text-base font-semibold text-tremor-content-light ${
+            validateFields() ? "opacity-50" : "opacity-100"
+          }`}
+        >
+          {!loading && "Create Account!"}{" "}
+          <Image
+            src={Spinner}
+            alt=""
+            className={`animate-spin ${loading ? "flex" : "hidden"}`}
+          />
+        </button>
       </div>
     </form>
   );

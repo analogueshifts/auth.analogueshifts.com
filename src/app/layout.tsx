@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
-import { Lexend } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-// Toastify
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastProvider } from "@/contexts/toast";
+import ToastMessage from "@/components/application/toast-message";
 
-const lexend = Lexend({
-  weight: "400",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
-  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Sign In | AnalogueShifts",
+  title: "AnalogueShifts Authentication",
   description: "Sign In to your Account",
 };
 
@@ -25,10 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(lexend.className)}>
+      <body className={cn(plusJakartaSans.className)}>
         {" "}
-        <ToastContainer position="top-center" />
-        {children}
+        <ToastProvider>
+          <ToastMessage />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

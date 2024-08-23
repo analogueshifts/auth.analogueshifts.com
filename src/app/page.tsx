@@ -1,11 +1,10 @@
-import LoginForm from "./login-form";
-import AuthenticationLayout from "@/components/application/layouts/authentication";
+import { Suspense } from "react";
+import Redirect from "@/components/application/redirect";
 
 export default function Home() {
   return (
-    <AuthenticationLayout>
-      {/* Form */}
-      <LoginForm />
-    </AuthenticationLayout>
+    <Suspense fallback={<p>Redirecting...</p>}>
+      <Redirect />
+    </Suspense>
   );
 }
