@@ -44,7 +44,7 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="login-card scroll-hidden py-10 max-h-[90%] overflow-y-auto large:py-14 tablet:px-5 px-58 flex flex-col items-center w-[510px] large:w-617 max-w-section h-max rounded-[18.38px] bg-white"
+      className="login-card scroll-hidden py-10 max-h-[90%] overflow-y-auto large:py-14 tablet:px-5 px-58 flex flex-col items-center w-[510px] large:w-617 tablet:max-w-[calc(100%-24px)] max-w-section h-max rounded-[18.38px] bg-white"
     >
       <Image
         src={Logo}
@@ -76,17 +76,17 @@ export default function LoginForm() {
       </div>
       <div className="w-full large:mb-9 mb-7 flex tablet:px-2 flex-wrap px-4 justify-between items-center large:mt-6 mt-4">
         <div
-          className="w-max flex items-center gap-3 cursor-default"
+          className="w-max flex items-center tablet:gap-2 gap-3 cursor-default"
           onClick={() => setRememberMe((prev) => !prev)}
         >
           <CustomCheckBox checked={rememberMe} />
-          <p className="text-headingText font-medium text-[15px] large:text-lg">
+          <p className="text-headingText font-medium tablet:text-[13px] text-[15px] large:text-lg">
             Remember me
           </p>
         </div>
         <Link
           href="/forgot-password"
-          className="text-tremor-content-asYellow font-medium text-[15px] large:text-lg"
+          className="text-tremor-content-asYellow font-medium tablet:text-[13px] text-[15px] large:text-lg"
         >
           Forgot Password?
         </Link>
@@ -104,7 +104,7 @@ export default function LoginForm() {
           />
         </button>
       </div>
-      <p className="flex items-center justify-center font-medium text-[15px] large:text-lg text-headingText">
+      <p className="flex items-center tablet:text-[13px] justify-center font-medium text-[15px] large:text-lg text-headingText">
         New to AnalogueShifts?&nbsp;
         <Link href="/register" className="text-tremor-content-asYellow">
           Sign Up
