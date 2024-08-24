@@ -21,8 +21,6 @@ export const useAppAuth = () => {
         return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
       } else if (app === "events") {
         return process.env.NEXT_PUBLIC_EVENTS_BUILD_UUID;
-      } else if (app === "learn") {
-        return process.env.NEXT_PUBLIC_LEARN_BUILD_UUID;
       } else {
         return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
       }
