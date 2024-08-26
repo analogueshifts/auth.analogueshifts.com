@@ -129,14 +129,14 @@ export default function EmailVerificationForm() {
               className="w-full"
               value={value}
               onChange={(e) => setValue(e)}
-              maxLength={4}
+              maxLength={5}
             >
-              <InputOTPGroup className="grid w-full lg:w-[500px] large:w-[540px] tablet:w-full max-w-full grid-cols-4 gap-3.5">
-                {[0, 1, 2, 3].map((item) => {
+              <InputOTPGroup className="grid w-full lg:w-[500px] large:w-[540px] tablet:w-full max-w-full grid-cols-5 gap-3.5">
+                {[0, 1, 2, 3, 4].map((item) => {
                   return (
                     <InputOTPSlot
                       key={item}
-                      className="border min-w-full w-16 lg:w-full text-[#292929] col-span-1 rounded-[10px] h-16  text-[18px] large:text-[30px] font-bold"
+                      className="border min-w-full w-14 lg:w-full lg:h-16 text-[#292929] col-span-1 rounded-[10px] h-14  text-[18px] large:text-[30px] font-bold"
                       index={item}
                     />
                   );
@@ -145,9 +145,9 @@ export default function EmailVerificationForm() {
             </InputOTP>
             <button
               type="submit"
-              disabled={value.length < 4}
+              disabled={value.length < 5}
               className={`w-full bg-tremor-content-asYellow large:h-[60px] h-12 rounded-[20px] flex justify-center items-center text-sm large:text-base font-semibold text-tremor-content-light mt-7 large:mt-10 ${
-                value.length < 4 ? "opacity-50" : "opacity-100"
+                value.length < 5 ? "opacity-50" : "opacity-100"
               }`}
             >
               {!loading && "Verify email"}{" "}

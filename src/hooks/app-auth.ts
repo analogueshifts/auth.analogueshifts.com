@@ -43,7 +43,10 @@ export const useAppAuth = () => {
       setLoading(false);
       notifyUser(
         "error",
-        error?.response?.data?.message || error?.message || "Failed to Login"
+        error?.response?.data?.message ||
+          error?.response?.data?.data?.message ||
+          error?.message ||
+          "Failed to Login"
       );
 
       if (error?.response?.status === 401) {
