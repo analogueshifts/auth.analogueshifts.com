@@ -52,8 +52,8 @@ export const useAuth = () => {
         data: { email, password },
         headers: {
           "Content-Type": "application/json",
-          secret_key: process.env.NEXT_PUBLIC_SECRET_KEY,
-          public_key: process.env.NEXT_PUBLIC_PUBLIC_KEY,
+          "x-api-secret-key": process.env.NEXT_PUBLIC_SECRET_KEY,
+          "x-api-public-key": process.env.NEXT_PUBLIC_PUBLIC_KEY,
         },
       });
 
@@ -113,8 +113,8 @@ export const useAuth = () => {
         data,
         headers: {
           "Content-Type": "application/json",
-          secret_key: process.env.NEXT_PUBLIC_SECRET_KEY,
-          public_key: process.env.NEXT_PUBLIC_PUBLIC_KEY,
+          "x-api-secret-key": process.env.NEXT_PUBLIC_SECRET_KEY,
+          "x-api-public-key": process.env.NEXT_PUBLIC_PUBLIC_KEY,
         },
       });
 
