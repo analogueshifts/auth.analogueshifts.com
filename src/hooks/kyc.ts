@@ -31,7 +31,6 @@ export const useKyc = () => {
       setLoading(false);
       if (request?.data?.success) {
         notifyUser("success", "KYC Information Updated");
-        Cookies.remove("job-seeker-kyc-info");
       }
     } catch (error: any) {
       notifyUser(

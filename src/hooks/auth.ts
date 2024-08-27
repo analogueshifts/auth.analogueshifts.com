@@ -61,12 +61,13 @@ export const useAuth = () => {
         notifyUser("success", "Logged In successful");
         let t = response.data.data.token;
         Cookies.set("token", t);
-        if (!response.data.data.user?.email_verified_at) {
-          await sendOTP({ setLoading, userToken: t });
-          router.push("/email-verification");
-        } else {
-          router.push("/app-login");
-        }
+        // if (!response.data.data.user?.email_verified_at) {
+        //   await sendOTP({ setLoading, userToken: t });
+        //   router.push("/email-verification");
+        // } else {
+        //   router.push("/app-login");
+        // }
+        router.push("/app-login");
       }
 
       setLoading(false);
@@ -125,10 +126,13 @@ export const useAuth = () => {
         notifyUser("success", "Account created successfully");
 
         if (data.user_mode === "job") {
-          Cookies.set("redirect-from-verification", "/job-seeker-kyc");
+          // Cookies.set("redirect-from-verification", "/job-seeker-kyc");
+          router.push("/job-seeker-kyc");
+        } else {
+          router.push("/app-login");
         }
 
-        router.push("/email-verification");
+        // router.push("/email-verification");
       }
       setLoading(false);
     } catch (error: any) {
