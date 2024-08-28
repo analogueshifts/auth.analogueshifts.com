@@ -1,5 +1,4 @@
 "use client";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 import Image from "next/image";
@@ -11,16 +10,10 @@ export default function LayoutGridTwo({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
     <main className="w-full h-screen flex">
       <div
-        className={`bg-tremor-content-asYellow tablet:hidden relative flex flex-col items-center large:w-[645px] w-[500px] px-[61px] large:pt-[112px] pt-14 ${
-          pathname === "/register"
-            ? "large:h-[calc(100%-116px)] h-[calc(100%-30px)]"
-            : "h-full"
-        }`}
+        className={`bg-tremor-content-asYellow tablet:hidden relative flex flex-col items-center large:w-[645px] w-[500px] px-[61px] large:pt-[112px] pt-14 h-full`}
       >
         <Link
           className="large:mb-14 mb-8"
