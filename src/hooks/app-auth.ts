@@ -22,6 +22,7 @@ export const useAppAuth = () => {
       } else if (app === "events") {
         return process.env.NEXT_PUBLIC_EVENTS_BUILD_UUID;
       } else if (app === "forms") {
+        console.log(process.env.NEXT_PUBLIC_FORMS_BUILD_UUID);
         return process.env.NEXT_PUBLIC_FORMS_BUILD_UUID;
       } else if (app === "vets") {
         return process.env.NEXT_PUBLIC_VETS_BUILD_UUID;
