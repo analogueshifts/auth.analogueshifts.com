@@ -141,6 +141,8 @@ export const useAuth = () => {
     };
     try {
       const res = await axios.request(config);
+      console.log(res);
+
       if (res.data?.success) {
         Cookies.set("token", res.data?.data?.token || "");
         notifyUser("success", "Logged in successfully", "right");
