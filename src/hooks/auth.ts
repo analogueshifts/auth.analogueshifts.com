@@ -147,6 +147,9 @@ export const useAuth = () => {
         Cookies.set("token", res.data?.data?.token || "");
         notifyUser("success", "Logged in successfully", "right");
         router.push("/app-login");
+      } else {
+        notifyUser("error", res?.data?.message || "An error occurred");
+        router.push("/app-login");
       }
     } catch (error: any) {
       notifyUser(
