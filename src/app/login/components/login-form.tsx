@@ -8,6 +8,7 @@ import Logo from "@/assets/images/login/logo.svg";
 import Envelope from "@/assets/images/envelope.svg";
 import PadLock from "@/assets/images/padlock.svg";
 import Spinner from "@/assets/images/spinner.svg";
+import Google from "@/assets/images/google.svg";
 
 import FormInput from "@/components/application/form-input";
 import CustomCheckBox from "@/components/application/custom-checkbox";
@@ -24,7 +25,7 @@ export default function LoginForm() {
     password: false,
   });
 
-  const { login } = useAuth();
+  const { login, generateGoogleAuthLink } = useAuth();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault();
@@ -91,7 +92,7 @@ export default function LoginForm() {
           Forgot Password?
         </Link>
       </div>
-      <div className="px-4 tablet:px-2 w-full large:mb-9 mb-7 ">
+      <div className="px-4 flex flex-col gap-3 tablet:px-2 w-full large:mb-9 mb-7 ">
         <button
           type="submit"
           className="w-full bg-tremor-content-asYellow large:h-[60px] h-12 rounded-[20px] flex justify-center items-center text-sm large:text-base font-semibold text-tremor-content-light"
@@ -102,6 +103,14 @@ export default function LoginForm() {
             alt=""
             className={`animate-spin ${loading ? "flex" : "hidden"}`}
           />
+        </button>
+        <button
+          onClick={generateGoogleAuthLink}
+          type="button"
+          className="w-full large:h-[60px] h-12  rounded-[20px] gap-2.5 text-tremor-content-boulder950 text-sm large:text-base font-semibold flex justify-center items-center border border-[#9D9D9D] bg-[#FEF8F7]"
+        >
+          <Image src={Google} className="w-max h-max " alt="Google" /> Sign in
+          with Google
         </button>
       </div>
       <p className="flex items-center tablet:text-[13px] justify-center font-medium text-[15px] large:text-lg text-headingText">
