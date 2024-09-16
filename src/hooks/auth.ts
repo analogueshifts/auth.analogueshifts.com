@@ -105,6 +105,55 @@ export const useAuth = () => {
     }
   };
 
+  const generateGoogleAuthLink = async () => {
+    const config = {
+      url: "/auth/google/redirect",
+      method: "GET",
+    };
+    const newWindow = window.open("", "_blank");
+
+    try {
+      const res = await axios.request(config);
+      if (res.data?.success) {
+        let url = res?.data?.data?.auth_url;
+        if (url && newWindow) {
+          newWindow.location.href = url;
+        } else if (newWindow) {
+          newWindow.close();
+        }
+      }
+    } catch (error: any) {
+      notifyUser(
+        "error",
+        error?.response?.data?.message || error?.message || "An error occurred"
+      );
+
+      if (newWindow) {
+        newWindow.close();
+      }
+    }
+  };
+
+  const validateGoogleLogin = async ({ code }: { code: string }) => {
+    const config = {
+      url: "/auth/google/callback?code=" + code,
+      method: "GET",
+    };
+    try {
+      const res = await axios.request(config);
+      if (res.data?.success) {
+        Cookies.set("token", res.data?.data?.token || "");
+        notifyUser("success", "Logged in successfully", "center");
+        router.push("/app-login");
+      }
+    } catch (error: any) {
+      notifyUser(
+        "error",
+        error?.response?.data?.message || error?.message || "An error occurred"
+      );
+    }
+  };
+
   const register = async ({ setLoading, data }: RegisterParams) => {
     setLoading(true);
     try {
@@ -193,5 +242,7 @@ export const useAuth = () => {
     register,
     sendOTP,
     validateOTP,
+    validateGoogleLogin,
+    generateGoogleAuthLink,
   };
 };
