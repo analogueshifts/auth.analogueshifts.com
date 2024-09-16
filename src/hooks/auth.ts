@@ -143,7 +143,7 @@ export const useAuth = () => {
       const res = await axios.request(config);
       if (res.data?.success) {
         Cookies.set("token", res.data?.data?.token || "");
-        notifyUser("success", "Logged in successfully", "center");
+        notifyUser("success", "Logged in successfully", "right");
         router.push("/app-login");
       }
     } catch (error: any) {

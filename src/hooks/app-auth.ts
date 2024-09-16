@@ -55,9 +55,7 @@ export const useAppAuth = () => {
           "Failed to Login"
       );
 
-      if (error?.response?.status === 401) {
-        router.push("/login");
-      }
+      router.push("/login");
     }
   };
 
