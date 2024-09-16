@@ -92,7 +92,7 @@ export default function LoginForm() {
           Forgot Password?
         </Link>
       </div>
-      <div className="px-4 flex flex-col gap-3 tablet:px-2 w-full large:mb-9 mb-7 ">
+      <div className="px-4 flex flex-col gap-5 tablet:px-2 w-full large:mb-9 mb-7 ">
         <button
           type="submit"
           className="w-full bg-tremor-content-asYellow large:h-[60px] h-12 rounded-[20px] flex justify-center items-center text-sm large:text-base font-semibold text-tremor-content-light"
