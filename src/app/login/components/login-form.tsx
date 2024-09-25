@@ -62,7 +62,7 @@ export default function LoginForm() {
           label="Email"
           onChange={setEmail}
           value={email}
-          placeholder="analogueshifts@gmail.com"
+          placeholder="Enter email"
           type="email"
         />
         <FormInput
@@ -71,7 +71,7 @@ export default function LoginForm() {
           label="Password"
           onChange={setPassword}
           value={password}
-          placeholder="Analogue"
+          placeholder="Enter password"
           type="password"
         />
       </div>
