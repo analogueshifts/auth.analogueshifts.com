@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/hooks/auth";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent } from "react";
 
 import Link from "next/link";
 import Image from "next/image";

@@ -19,10 +19,18 @@ export default function Validate() {
   }, []);
 
   return (
-    <main className="w-full py-40 flex justify-center items-center">
-      <h2 className="text-tremor-content-boulder950 font-medium text-base">
-        Validating...
-      </h2>
+    <main
+      className="w-full h-screen flex justify-center items-center bg-white bg-cover bg-no-repeat"
+      style={{ backgroundImage: "url(/line-group.png)" }}
+    >
+      <div className="login-card scroll-hidden py-14 max-h-[90%] overflow-y-auto large:py-20 tablet:px-5 px-58 flex flex-col items-center w-[510px] large:w-617 tablet:max-w-[calc(100%-24px)] max-w-section h-max rounded-[18.38px] bg-white">
+        <div className="lds-ring">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
     </main>
   );
 }
