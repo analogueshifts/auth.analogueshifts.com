@@ -110,16 +110,13 @@ export const useAuth = () => {
       url: "/auth/google/redirect",
       method: "GET",
     };
-    const newWindow = window.open("", "_blank");
 
     try {
       const res = await axios.request(config);
       if (res.data?.success) {
         let url = res?.data?.data?.auth_url;
-        if (url && newWindow) {
-          newWindow.location.href = url;
-        } else if (newWindow) {
-          newWindow.close();
+        if (url) {
+          window.location.href = url;
         }
       }
     } catch (error: any) {
@@ -127,10 +124,6 @@ export const useAuth = () => {
         "error",
         error?.response?.data?.message || error?.message || "An error occurred"
       );
-
-      if (newWindow) {
-        newWindow.close();
-      }
     }
   };
 
