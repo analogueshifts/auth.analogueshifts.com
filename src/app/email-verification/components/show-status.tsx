@@ -14,13 +14,7 @@ export default function ShowStatus({ status, handleRetry }: Params) {
     if (status === "error") {
       handleRetry();
     } else {
-      let redirect = Cookies.get("redirect-from-verification");
-      if (redirect) {
-        router.push(redirect);
-        Cookies.remove("redirect-from-verification");
-      } else {
-        router.push("/app-login");
-      }
+      router.push("/app-login");
     }
   };
 
