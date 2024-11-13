@@ -29,7 +29,7 @@ export const useAppAuth = () => {
         case "resume":
           return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
         case "pay":
-          return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
+          return process.env.NEXT_PUBLIC_PAY_BUILD_UUID;
         default:
           return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
       }
