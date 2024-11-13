@@ -52,6 +52,7 @@ export const useAuth = () => {
         data: { email, password },
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
           "x-api-secret-key": process.env.NEXT_PUBLIC_SECRET_KEY,
           "x-api-public-key": process.env.NEXT_PUBLIC_PUBLIC_KEY,
         },
@@ -98,10 +99,8 @@ export const useAuth = () => {
         },
       });
       setLoading(false);
-      console.log(response);
     } catch (error) {
       setLoading(false);
-      console.log(error);
     }
   };
 
@@ -134,7 +133,6 @@ export const useAuth = () => {
     };
     try {
       const res = await axios.request(config);
-      console.log(res);
 
       if (res.data?.success) {
         Cookies.set("token", res.data?.data?.token || "");

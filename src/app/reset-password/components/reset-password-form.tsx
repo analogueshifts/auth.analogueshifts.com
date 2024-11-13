@@ -68,6 +68,7 @@ export default function ResetPasswordForm() {
       url: "/forgot-password",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       data: data,
     };
@@ -98,6 +99,7 @@ export default function ResetPasswordForm() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       data: { OTP: otp, email },
     };
@@ -124,7 +126,9 @@ export default function ResetPasswordForm() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        secret_key: process.env.NEXT_PUBLIC_SECRET_KEY,
+        Accept: "application/json",
+        "x-api-secret-key": process.env.NEXT_PUBLIC_SECRET_KEY,
+        "x-api-public-key": process.env.NEXT_PUBLIC_PUBLIC_KEY,
       },
       data: {
         email,

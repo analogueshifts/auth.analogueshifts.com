@@ -17,18 +17,21 @@ export const useAppAuth = () => {
 
   const login = async ({ app, setLoading }: LoginParams) => {
     const toggleApp = () => {
-      if (app === "main") {
-        return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
-      } else if (app === "events") {
-        return process.env.NEXT_PUBLIC_EVENTS_BUILD_UUID;
-      } else if (app === "forms") {
-        return process.env.NEXT_PUBLIC_FORMS_BUILD_UUID;
-      } else if (app === "vets") {
-        return process.env.NEXT_PUBLIC_VETS_BUILD_UUID;
-      } else if (app === "resume") {
-        return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
-      } else {
-        return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
+      switch (app) {
+        case "main":
+          return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
+        case "events":
+          return process.env.NEXT_PUBLIC_EVENTS_BUILD_UUID;
+        case "forms":
+          return process.env.NEXT_PUBLIC_FORMS_BUILD_UUID;
+        case "vets":
+          return process.env.NEXT_PUBLIC_VETS_BUILD_UUID;
+        case "resume":
+          return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
+        case "pay":
+          return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
+        default:
+          return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
       }
     };
 
@@ -39,6 +42,7 @@ export const useAppAuth = () => {
         url: "/app/login/" + toggleApp() || "",
         headers: {
           Authorization: "Bearer " + token,
+          Accept: "application/json",
         },
       });
       if (response?.data?.success) {
