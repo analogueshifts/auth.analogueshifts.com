@@ -18,6 +18,8 @@ export const useAppAuth = () => {
   const login = async ({ app, setLoading }: LoginParams) => {
     const toggleApp = () => {
       switch (app) {
+        case "local":
+          return process.env.NEXT_PUBLIC_LOCAL_BUILD_UUID;
         case "main":
           return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
         case "events":
