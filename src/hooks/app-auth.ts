@@ -30,6 +30,8 @@ export const useAppAuth = () => {
           return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
         case "pay":
           return process.env.NEXT_PUBLIC_PAY_BUILD_UUID;
+        case "learn":
+          return process.env.NEXT_PUBLIC_LEARN_BUILD_UUID;
         default:
           return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
       }
