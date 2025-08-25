@@ -17,26 +17,7 @@ export const useAppAuth = () => {
 
   const login = async ({ app, setLoading }: LoginParams) => {
     const toggleApp = () => {
-      switch (app) {
-        case "local":
-          return process.env.NEXT_PUBLIC_LOCAL_BUILD_UUID;
-        case "main":
-          return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
-        case "events":
-          return process.env.NEXT_PUBLIC_EVENTS_BUILD_UUID;
-        case "forms":
-          return process.env.NEXT_PUBLIC_FORMS_BUILD_UUID;
-        case "vets":
-          return process.env.NEXT_PUBLIC_VETS_BUILD_UUID;
-        case "resume":
-          return process.env.NEXT_PUBLIC_RESUME_BUILD_UUID;
-        case "pay":
-          return process.env.NEXT_PUBLIC_PAY_BUILD_UUID;
-        case "learn":
-          return process.env.NEXT_PUBLIC_LEARN_BUILD_UUID;
-        default:
-          return process.env.NEXT_PUBLIC_MAIN_SITE_BUILD_UUID;
-      }
+      return app;
     };
 
     try {
