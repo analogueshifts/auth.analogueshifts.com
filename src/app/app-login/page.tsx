@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAppAuth } from "@/hooks/app-auth";
 
 export default function Page() {
-  const app = Cookies.get("app");
+  const app = process.env.NEXT_PUBLIC_SITE_BUILD_UUID;
   const token = Cookies.get("token");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
