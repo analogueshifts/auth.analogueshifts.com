@@ -1,10 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Cookies from 'js-cookie';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppAuth } from '@/hooks/app-auth';
 
-export default function Page() {
+function LoginContent() {
   const router = useRouter();
   const token = Cookies.get('token');
   const searchParams = useSearchParams();
@@ -31,5 +31,13 @@ export default function Page() {
     <main className='flex justify-center items-center h-screen w-full'>
       <span className='border-green-300 border-x-2 w-5 h-5 rounded-full animate-spin' />
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
