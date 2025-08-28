@@ -27,5 +27,17 @@ export default function Redirect() {
       notifyUser('error', 'App not found');
     }
   }, []);
-  return <main></main>;
+  if (!app) {
+    return (
+      <main className='flex justify-center items-center h-screen w-full'>
+        <span className='border-red-300 border-x-2 w-9 h-9 rounded-full animate-spin' />
+        <p className='text-red-500'>App not found</p>
+      </main>
+    );
+  }
+  return (
+    <main className='flex justify-center items-center h-screen w-full'>
+      <span className='border-green-300 border-x-2 w-9 h-9 rounded-full animate-spin' />
+    </main>
+  );
 }
