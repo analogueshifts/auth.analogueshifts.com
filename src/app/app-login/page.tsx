@@ -1,24 +1,35 @@
-"use client";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
-import { useAppAuth } from "@/hooks/app-auth";
+'use client';
+import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useAppAuth } from '@/hooks/app-auth';
 
 export default function Page() {
-  const app = Cookies.get("app");
-  const token = Cookies.get("token");
   const router = useRouter();
+  const token = Cookies.get('token');
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+
+  let app;
+  if (!searchParams.has('app')) {
+    app = Cookies.get('app');
+  } else {
+    app = searchParams.get('app');
+  }
 
   const { login } = useAppAuth();
 
   useEffect(() => {
     if (!token || !app) {
-      router.push("/");
+      router.push(`/?app=${app}`);
     } else {
       login({ app, setLoading });
     }
   }, []);
 
-  return <main></main>;
+  return (
+    <main className='flex justify-center items-center h-screen w-full'>
+      <span className='border-green-300 border-x-2 w-5 h-5 rounded-full animate-spin' />
+    </main>
+  );
 }

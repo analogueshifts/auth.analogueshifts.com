@@ -1,30 +1,30 @@
-"use client";
-import Cookies from "js-cookie";
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-
-import { useRouter } from "next/navigation";
+'use client';
+import Cookies from 'js-cookie';
+import { useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useToast } from '@/contexts/toast';
 
 export default function Redirect() {
   const searchParams = useSearchParams();
+  const app = searchParams.get('app');
   const router = useRouter();
-  let app = searchParams.get("app");
+
+  const { notifyUser }: any = useToast();
 
   const navigate = () => {
-    const token = Cookies.get("token");
+    const token = Cookies.get('token');
     if (!token) {
-      router.push("/login");
+      router.push('/login');
     } else {
-      router.push("/app-login");
+      router.push(`/app-login?app=${app}`);
     }
   };
   useEffect(() => {
     if (app) {
-      Cookies.set("app", app);
+      Cookies.set('app', app);
       navigate();
     } else {
-      Cookies.set("app", "main");
-      navigate();
+      notifyUser('error', 'App not found');
     }
   }, []);
   return <main></main>;
