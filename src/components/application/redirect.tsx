@@ -80,18 +80,20 @@ export default function Redirect() {
                   className='w-8 h-8 rounded-full object-cover'
                 />
               ) : (
-                <span className='text-white font-bold text-sm'>A</span>
+                <span className='text-white font-bold text-sm'>
+                  {(name || 'analogueshifts')[0]?.toUpperCase()}
+                </span>
               )}
             </div>
             <span className='text-xl font-semibold text-foreground'>
-              {name || 'analogueshift'}
+              {name || 'analogueshifts'}
             </span>
           </div>
           <h1 className='text-2xl font-medium text-foreground text-balance'>
-            Choose an account
+            Use this account
           </h1>
           <p className='text-muted-foreground text-sm'>
-            to continue to analogueshift
+            to continue to {name || 'analogueshifts'}
           </p>
         </div>
 
@@ -154,8 +156,8 @@ export default function Redirect() {
         {/* Footer */}
         <div className='text-center pt-6'>
           <p className='text-xs text-muted-foreground'>
-            To continue, {name || 'analogueshift'} will share your name, email
-            address, and profile picture with this app.
+            To continue, analogueshifts will share your name, email address, and
+            profile picture with this app.
           </p>
         </div>
       </div>
