@@ -29,7 +29,7 @@ function LoginContent() {
 
   return (
     <main className='flex justify-center items-center h-screen w-full'>
-      <span className='border-green-300 border-x-2 w-9 h-9 rounded-full animate-spin' />
+      <span className='border-[#FFBB0A] border-x-2 w-9 h-9 rounded-full animate-spin' />
     </main>
   );
 }

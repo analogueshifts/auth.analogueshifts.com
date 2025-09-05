@@ -99,6 +99,7 @@ export const useAuth = () => {
         },
       });
       setLoading(false);
+      return response.data;
     } catch (error) {
       setLoading(false);
     }
