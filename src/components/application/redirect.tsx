@@ -77,7 +77,7 @@ export default function Redirect() {
                 <img
                   src={logo || '/placeholder.svg'}
                   alt='App Logo'
-                  className='w-8 h-8 rounded-full'
+                  className='w-8 h-8 rounded-full object-cover'
                 />
               ) : (
                 <span className='text-white font-bold text-sm'>A</span>
