@@ -23,26 +23,16 @@ export default function Redirect() {
 
   const { notifyUser }: any = useToast();
 
-  const navigate = useCallback(() => {
-    const token = Cookies.get('token');
-    if (!token) {
-      router.push('/login');
-    } else if (!app) {
-      notifyUser('error', 'App not found');
-    } else {
-      Cookies.set('app', app);
-      router.push(`/app-login?app=${app}`);
-    }
-  }, [app, router, notifyUser]);
-
-  const handleLogout = () => {
-    Cookies.remove('token');
-    router.push('/login');
-  };
-
-  const handleCancel = () => {
-    router.back();
-  };
+  useEffect(() => {
+    const setAppCookie = async () => {
+      if (app) {
+        await Cookies.set('app', app);
+      } else {
+        router.back();
+      }
+    };
+    setAppCookie();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -57,6 +47,24 @@ export default function Redirect() {
     };
     fetchUser();
   }, [router]);
+
+  const navigate = useCallback(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+      router.push('/login');
+    } else {
+      router.push(`/app-login?app=${app}`);
+    }
+  }, [app, router, notifyUser]);
+
+  const handleLogout = () => {
+    Cookies.remove('token');
+    router.push('/login');
+  };
+
+  const handleCancel = () => {
+    router.back();
+  };
 
   if (loading) {
     return (

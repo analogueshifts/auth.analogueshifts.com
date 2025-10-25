@@ -11,17 +11,19 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
 
   let app;
-  if (!searchParams.has('app')) {
-    app = Cookies.get('app');
-  } else {
+  if (searchParams.has('app')) {
     app = searchParams.get('app');
+  } else {
+    app = Cookies.get('app');
   }
 
   const { login } = useAppAuth();
 
   useEffect(() => {
-    if (!token || !app) {
-      router.push(`/?app=${app}`);
+    if (!token) {
+      router.push('/login');
+    } else if (!app) {
+      router.back();
     } else {
       login({ app, setLoading });
     }
