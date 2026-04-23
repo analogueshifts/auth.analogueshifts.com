@@ -2,12 +2,11 @@ module.exports = {
   apps: [
     {
       name: "auth-frontend",
-      cwd: "/var/www/auth.analogueshifts.com",
       script: "npm",
       args: "start",
       env: {
-        NODE_ENV: "production",
-        PORT: 3000,
+        NODE_ENV: process.env.NODE_ENV || "production",
+        PORT: process.env.PORT || 3000,
       },
       instances: 1,
       exec_mode: "fork",

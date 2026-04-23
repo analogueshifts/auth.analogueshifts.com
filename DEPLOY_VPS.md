@@ -3,6 +3,28 @@
 This frontend is a Next.js app and must run as a Node.js process.
 Your Laravel API can continue running with PHP-FPM/Nginx as-is.
 
+## Quick path: one command bootstrap
+
+This repo includes an automation script at deploy/bootstrap-vps-frontend.sh.
+
+Run on your VPS as root:
+
+sudo bash deploy/bootstrap-vps-frontend.sh \
+    --domain auth.analogueshifts.com \
+    --api-url https://api.analogueshifts.com \
+    --repo git@github.com:analogueshifts/auth.analogueshifts.com.git \
+    --branch master \
+    --email you@example.com
+
+You can also pass keys directly:
+
+sudo bash deploy/bootstrap-vps-frontend.sh \
+    --domain auth.analogueshifts.com \
+    --api-url https://api.analogueshifts.com \
+    --repo git@github.com:analogueshifts/auth.analogueshifts.com.git \
+    --public-key your-public-key \
+    --secret-key your-secret-key
+
 ## 1) Prepare server packages
 
 On your VPS:
