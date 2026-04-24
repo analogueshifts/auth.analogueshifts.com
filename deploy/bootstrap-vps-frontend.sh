@@ -163,12 +163,7 @@ echo "[7/9] Starting app with PM2"
 PORT="$PORT" NODE_ENV=production pm2 start ecosystem.config.cjs --name "$APP_NAME" --update-env || PORT="$PORT" NODE_ENV=production pm2 restart "$APP_NAME" --update-env
 pm2 save
 
-if ! pm2 startup systemd -u root --hp /root | grep -q "already installed"; then
-  PM2_STARTUP_CMD="$(pm2 startup systemd -u root --hp /root | tail -n 1)"
-  if [[ -n "$PM2_STARTUP_CMD" ]]; then
-    eval "$PM2_STARTUP_CMD"
-  fi
-fi
+pm2 startup systemd -u root --hp /root >/dev/null 2>&1 || true
 
 echo "[8/9] Configuring Nginx"
 cat > "/etc/nginx/sites-available/$DOMAIN" <<EOF
