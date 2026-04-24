@@ -127,8 +127,6 @@ export default function ResetPasswordForm() {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "x-api-secret-key": process.env.NEXT_PUBLIC_SECRET_KEY,
-        "x-api-public-key": process.env.NEXT_PUBLIC_PUBLIC_KEY,
       },
       data: {
         email,

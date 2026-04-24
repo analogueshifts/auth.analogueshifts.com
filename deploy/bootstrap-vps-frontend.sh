@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Bootstrap and deploy this Next.js frontend to a VPS using PM2 + Nginx.
+# Bootstrap and deploy a Next.js frontend to a VPS using PM2 + Nginx.
+# Supports multiple Next.js apps on same server with different ports.
 # Run as root or with sudo:
 # sudo bash deploy/bootstrap-vps-frontend.sh \
+#   --app-name auth-frontend \
 #   --domain auth.analogueshifts.com \
 #   --api-url https://api.analogueshifts.com \
 #   --repo git@github.com:analogueshifts/auth.analogueshifts.com.git
 
+APP_NAME=""
 DOMAIN=""
 API_URL=""
 REPO_URL=""
 APP_DIR=""
 BRANCH="master"
 PORT="3000"
-PUBLIC_KEY=""
-SECRET_KEY=""
 EMAIL=""
 
 print_help() {
   cat <<'EOF'
 Usage:
-  bootstrap-vps-frontend.sh --domain <domain> --api-url <api-url> --repo <git-url> [options]
+  bootstrap-vps-frontend.sh --app-name <name> --domain <domain> --api-url <api-url> --repo <git-url> [options]
 
 Required:
+  --app-name     PM2 app name (example: auth-frontend)
   --domain       Frontend domain (example: auth.analogueshifts.com)
   --api-url      Backend API base URL (example: https://api.analogueshifts.com)
   --repo         GitHub repo URL (SSH or HTTPS)
@@ -32,15 +34,24 @@ Optional:
   --app-dir      App directory (default: /var/www/<domain>)
   --branch       Git branch (default: master)
   --port         Node app port behind Nginx (default: 3000)
-  --public-key   Value for NEXT_PUBLIC_PUBLIC_KEY
-  --secret-key   Value for NEXT_PUBLIC_SECRET_KEY
   --email        Email for certbot registration (recommended)
   --help         Show this help
+
+Example (first app):
+  sudo bash deploy/bootstrap-vps-frontend.sh --app-name auth-frontend --domain auth.analogueshifts.com --api-url https://api.analogueshifts.com --repo git@github.com:analogueshifts/auth.analogueshifts.com.git
+
+Example (second app, different port):
+  sudo bash deploy/bootstrap-vps-frontend.sh --app-name jobs-frontend --domain jobs.analogueshifts.com --api-url https://api.analogueshifts.com --repo git@github.com:analogueshifts/jobs.analogueshifts.com.git --port 3001
+
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --app-name)
+      APP_NAME="$2"
+      shift 2
+      ;;
     --domain)
       DOMAIN="$2"
       shift 2
@@ -65,14 +76,6 @@ while [[ $# -gt 0 ]]; do
       PORT="$2"
       shift 2
       ;;
-    --public-key)
-      PUBLIC_KEY="$2"
-      shift 2
-      ;;
-    --secret-key)
-      SECRET_KEY="$2"
-      shift 2
-      ;;
     --email)
       EMAIL="$2"
       shift 2
@@ -89,8 +92,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$DOMAIN" || -z "$API_URL" || -z "$REPO_URL" ]]; then
-  echo "Error: --domain, --api-url, and --repo are required."
+if [[ -z "$APP_NAME" || -z "$DOMAIN" || -z "$API_URL" || -z "$REPO_URL" ]]; then
+  echo "Error: --app-name, --domain, --api-url, and --repo are required."
   print_help
   exit 1
 fi
@@ -99,22 +102,20 @@ if [[ -z "$APP_DIR" ]]; then
   APP_DIR="/var/www/$DOMAIN"
 fi
 
-if [[ -z "$PUBLIC_KEY" ]]; then
-  read -r -p "Enter NEXT_PUBLIC_PUBLIC_KEY: " PUBLIC_KEY
-fi
-
-if [[ -z "$SECRET_KEY" ]]; then
-  read -r -s -p "Enter NEXT_PUBLIC_SECRET_KEY: " SECRET_KEY
-  echo
-fi
-
-echo "[1/9] Installing system dependencies"
-apt update
-apt install -y nginx curl git certbot python3-certbot-nginx
-
+echo "[1/9] Installing system dependencies (first run only)"
 if ! command -v node >/dev/null 2>&1; then
+  apt update
+  apt install -y curl git
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
   apt install -y nodejs
+fi
+
+if ! command -v nginx >/dev/null 2>&1; then
+  apt install -y nginx
+fi
+
+if ! command -v certbot >/dev/null 2>&1; then
+  apt install -y certbot python3-certbot-nginx
 fi
 
 if ! command -v pm2 >/dev/null 2>&1; then
@@ -151,8 +152,6 @@ fi
 echo "[5/9] Writing production environment"
 cat > "$APP_DIR/.env.production" <<EOF
 NEXT_PUBLIC_BACKEND_URL=$API_URL
-NEXT_PUBLIC_PUBLIC_KEY=$PUBLIC_KEY
-NEXT_PUBLIC_SECRET_KEY=$SECRET_KEY
 PORT=$PORT
 NODE_ENV=production
 EOF
@@ -161,12 +160,14 @@ echo "[6/9] Building Next.js app"
 npm run build
 
 echo "[7/9] Starting app with PM2"
-PORT="$PORT" NODE_ENV=production pm2 start ecosystem.config.cjs --update-env || PORT="$PORT" NODE_ENV=production pm2 restart auth-frontend --update-env
+PORT="$PORT" NODE_ENV=production pm2 start ecosystem.config.cjs --name "$APP_NAME" --update-env || PORT="$PORT" NODE_ENV=production pm2 restart "$APP_NAME" --update-env
 pm2 save
 
-PM2_STARTUP_CMD="$(pm2 startup systemd -u root --hp /root | tail -n 1)"
-if [[ -n "$PM2_STARTUP_CMD" ]]; then
-  eval "$PM2_STARTUP_CMD"
+if ! pm2 startup systemd -u root --hp /root | grep -q "already installed"; then
+  PM2_STARTUP_CMD="$(pm2 startup systemd -u root --hp /root | tail -n 1)"
+  if [[ -n "$PM2_STARTUP_CMD" ]]; then
+    eval "$PM2_STARTUP_CMD"
+  fi
 fi
 
 echo "[8/9] Configuring Nginx"
@@ -202,5 +203,7 @@ fi
 
 echo
 echo "Deployment complete"
+echo "App: $APP_NAME"
 echo "Frontend URL: https://$DOMAIN"
-echo "Check logs: pm2 logs auth-frontend"
+echo "Check logs: pm2 logs $APP_NAME"
+

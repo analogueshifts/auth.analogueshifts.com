@@ -9,27 +9,37 @@ This repo includes an automation script at deploy/bootstrap-vps-frontend.sh.
 
 Run on your VPS as root:
 
+```bash
 sudo bash deploy/bootstrap-vps-frontend.sh \
-    --domain auth.analogueshifts.com \
-    --api-url https://api.analogueshifts.com \
-    --repo git@github.com:analogueshifts/auth.analogueshifts.com.git \
-    --branch master \
-    --email you@example.com
+  --app-name auth-frontend \
+  --domain auth.analogueshifts.com \
+  --api-url https://api.analogueshifts.com \
+  --repo git@github.com:analogueshifts/auth.analogueshifts.com.git \
+  --branch master \
+  --email you@example.com
+```
 
-You can also pass keys directly:
+For additional Next.js apps on the same server, use different ports:
 
+```bash
 sudo bash deploy/bootstrap-vps-frontend.sh \
-    --domain auth.analogueshifts.com \
-    --api-url https://api.analogueshifts.com \
-    --repo git@github.com:analogueshifts/auth.analogueshifts.com.git \
-    --public-key your-public-key \
-    --secret-key your-secret-key
+  --app-name jobs-frontend \
+  --domain jobs.analogueshifts.com \
+  --api-url https://api.analogueshifts.com \
+  --repo git@github.com:analogueshifts/jobs.analogueshifts.com.git \
+  --port 3001 \
+  --email you@example.com
+```
 
-## 1) Prepare server packages
+Each app runs on its own port (3000, 3001, 3002, etc) and Nginx routes requests by domain.
 
-On your VPS:
-
-- Install Node.js 20 LTS
+The script will:
+1. Install Node, PM2, Nginx, Certbot (first app only)
+2. Pull the repo into /var/www/<domain>
+3. Create .env.production
+4. Build and start with PM2
+5. Configure Nginx reverse proxy per domain
+6. Issue SSL certificate
 - Install PM2
 - Ensure Nginx is installed
 
@@ -56,16 +66,17 @@ npm install
 
 Create .env.production in the project root:
 
+```env
 NEXT_PUBLIC_BACKEND_URL=https://api.analogueshifts.com
-NEXT_PUBLIC_PUBLIC_KEY=your-public-key
-NEXT_PUBLIC_SECRET_KEY=your-secret-key
 PORT=3000
 NODE_ENV=production
+```
 
 Important:
 
 - NEXT_PUBLIC_BACKEND_URL must point to your deployed Laravel API base URL
 - If your API is under a path, include it (example: https://api.example.com/api)
+- PORT should differ if you run multiple Next.js apps on same server (3000, 3001, 3002, etc)
 
 ## 4) Build and run with PM2
 
@@ -120,24 +131,63 @@ sudo certbot --nginx -d auth.analogueshifts.com
 
 On each deploy:
 
+```bash
 cd /var/www/auth.analogueshifts.com
 git pull
 npm install
 npm run build
 pm2 restart auth-frontend
+```
 
-## 8) CORS and API notes
+## 8) Multiple Next.js apps on same server
+
+You can deploy multiple Next.js apps to the same VPS, each on its own port.
+
+Example setup:
+- auth.analogueshifts.com → port 3000
+- jobs.analogueshifts.com → port 3001
+- admin.analogueshifts.com → port 3002
+
+For each app:
+1. Get the repo URL
+2. Pick a unique port (3000, 3001, 3002, etc)
+3. Run bootstrap with that port:
+
+```bash
+sudo bash deploy/bootstrap-vps-frontend.sh \
+  --app-name jobs-frontend \
+  --domain jobs.analogueshifts.com \
+  --api-url https://api.analogueshifts.com \
+  --repo git@github.com:analogueshifts/jobs.analogueshifts.com.git \
+  --port 3001 \
+  --email you@example.com
+```
+
+PM2 manages all apps. Check status with:
+
+```bash
+pm2 list
+pm2 logs auth-frontend
+pm2 logs jobs-frontend
+```
+
+Nginx automatically routes by domain to the correct port.
+
+## 9) CORS and API notes
 
 Because frontend and API are on different subdomains, ensure Laravel CORS allows:
 
 - https://auth.analogueshifts.com
+- https://jobs.analogueshifts.com (if deployed)
+- etc
 
 Also ensure any auth/session settings in Laravel match your auth strategy.
 This frontend stores token in browser cookie and sends Bearer tokens on requests.
 
-## 9) Quick troubleshooting
+## 10) Quick troubleshooting
 
-- 502 Bad Gateway: frontend app is not running on port 3000
+- 502 Bad Gateway: frontend app is not running on the assigned port
 - API calls failing: incorrect NEXT_PUBLIC_BACKEND_URL
 - CORS error: Laravel CORS config missing frontend origin
 - Mixed content: ensure both frontend and API use HTTPS
+- Port conflict: if port 3000 is already in use, assign different port with --port flag
