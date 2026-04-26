@@ -16,7 +16,9 @@ export default function Redirect() {
   const { getUser } = useAuth();
 
   const searchParams = useSearchParams();
-  const app = searchParams.get('app');
+  const rawApp = searchParams.get('app');
+  const app =
+    rawApp && rawApp !== 'undefined' && rawApp !== 'null' ? rawApp : null;
   const name = searchParams.get('name');
   const logo = searchParams.get('logo');
   const router = useRouter();
@@ -28,11 +30,12 @@ export default function Redirect() {
       if (app) {
         await Cookies.set('app', app);
       } else {
-        router.back();
+        notifyUser('error', 'Invalid app identifier');
+        router.push('/login');
       }
     };
     setAppCookie();
-  }, []);
+  }, [app, notifyUser, router]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -51,6 +54,9 @@ export default function Redirect() {
   const navigate = useCallback(() => {
     const token = Cookies.get('token');
     if (!token) {
+      router.push('/login');
+    } else if (!app) {
+      notifyUser('error', 'Invalid app identifier');
       router.push('/login');
     } else {
       router.push(`/app-login?app=${app}`);

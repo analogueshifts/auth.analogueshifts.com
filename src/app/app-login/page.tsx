@@ -10,12 +10,13 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
-  let app;
-  if (searchParams.has('app')) {
-    app = searchParams.get('app');
-  } else {
-    app = Cookies.get('app');
-  }
+  const appFromQuery = searchParams.get('app');
+  const appFromCookie = Cookies.get('app');
+  const selectedApp = appFromQuery || appFromCookie;
+  const app =
+    selectedApp && selectedApp !== 'undefined' && selectedApp !== 'null'
+      ? selectedApp
+      : null;
 
   const { login } = useAppAuth();
 
@@ -23,11 +24,11 @@ function LoginContent() {
     if (!token) {
       router.push('/login');
     } else if (!app) {
-      router.back();
+      router.push('/login');
     } else {
       login({ app, setLoading });
     }
-  }, []);
+  }, [app, login, router, token]);
 
   return (
     <main className='flex justify-center items-center h-screen w-full'>

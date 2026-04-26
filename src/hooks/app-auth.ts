@@ -16,15 +16,20 @@ export const useAppAuth = () => {
   const token = Cookies.get("token");
 
   const login = async ({ app, setLoading }: LoginParams) => {
-    const toggleApp = () => {
-      return app;
-    };
+    const normalizedApp =
+      app && app !== "undefined" && app !== "null" ? app : "";
+
+    if (!normalizedApp) {
+      notifyUser("error", "Invalid app identifier");
+      router.push("/login");
+      return;
+    }
 
     try {
       setLoading(true);
       const response = await axios.request({
         method: "GET",
-        url: "/app/login/" + toggleApp() || "",
+        url: `/app/login/${encodeURIComponent(normalizedApp)}`,
         headers: {
           Authorization: "Bearer " + token,
           Accept: "application/json",
