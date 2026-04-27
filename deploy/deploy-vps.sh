@@ -217,15 +217,15 @@ run_batch() {
       continue
     fi
 
-    app_name="${app_name//\r/}"
-    domain="${domain//\r/}"
-    repo="${repo//\r/}"
-    api_url="${api_url//\r/}"
-    auth_url="${auth_url//\r/}"
-    site_id="${site_id//\r/}"
-    port="${port//\r/}"
-    branch="${branch//\r/}"
-    app_dir="${app_dir//\r/}"
+    app_name="${app_name//$'\r'/}"
+    domain="${domain//$'\r'/}"
+    repo="${repo//$'\r'/}"
+    api_url="${api_url//$'\r'/}"
+    auth_url="${auth_url//$'\r'/}"
+    site_id="${site_id//$'\r'/}"
+    port="${port//$'\r'/}"
+    branch="${branch//$'\r'/}"
+    app_dir="${app_dir//$'\r'/}"
 
     if [[ -z "$app_name" || -z "$domain" || -z "$repo" || -z "$api_url" || -z "$port" ]]; then
       echo "Error: invalid row $line_no in $BATCH_FILE"
