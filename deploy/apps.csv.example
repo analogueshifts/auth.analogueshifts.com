@@ -1,0 +1,8 @@
+app_name,domain,repo,api_url,auth_url,site_id,port,branch,app_dir
+auth-frontend,auth.analogueshifts.com,git@github.com:analogueshifts/auth.analogueshifts.com.git,https://api.analogueshifts.com,,,3000,master,
+resume-frontend,resume.analogueshifts.com,git@github.com:analogueshifts/resume.analogueshifts.com.git,https://api.analogueshifts.com,https://auth.analogueshifts.com,resume,3001,master,
+learn-frontend,learn.analogueshifts.com,git@github.com:analogueshifts/learn.analogueshifts.com.git,https://api.analogueshifts.com,https://auth.analogueshifts.com,learn,3002,master,
+events-frontend,events.analogueshifts.com,git@github.com:analogueshifts/events.analogueshifts.com.git,https://api.analogueshifts.com,https://auth.analogueshifts.com,events,3003,master,
+forms-frontend,forms.analogueshifts.com,git@github.com:analogueshifts/forms.analogueshifts.com.git,https://api.analogueshifts.com,https://auth.analogueshifts.com,forms,3004,master,
+main-frontend,analogueshifts.com,git@github.com:analogueshifts/www.analogueshifts.com.git,https://api.analogueshifts.com,https://auth.analogueshifts.com,main,3005,master,
+pay-frontend,pay.analogueshifts.com,git@github.com:analogueshifts/pay.analogueshifts.com.git,https://api.analogueshifts.com,https://auth.analogueshifts.com,pay,3006,master,

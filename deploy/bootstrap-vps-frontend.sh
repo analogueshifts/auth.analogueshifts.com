@@ -13,6 +13,8 @@ set -euo pipefail
 APP_NAME=""
 DOMAIN=""
 API_URL=""
+AUTH_URL=""
+SITE_BUILD_UUID=""
 REPO_URL=""
 APP_DIR=""
 BRANCH="master"
@@ -34,6 +36,8 @@ Optional:
   --app-dir      App directory (default: /var/www/<domain>)
   --branch       Git branch (default: master)
   --port         Node app port behind Nginx (default: 3000)
+  --auth-url     Auth frontend URL for cross-app login links (example: https://auth.analogueshifts.com)
+  --site-id      App identifier sent to auth service (example: resume)
   --email        Email for certbot registration (recommended)
   --help         Show this help
 
@@ -42,6 +46,9 @@ Example (first app):
 
 Example (second app, different port):
   sudo bash deploy/bootstrap-vps-frontend.sh --app-name jobs-frontend --domain jobs.analogueshifts.com --api-url https://api.analogueshifts.com --repo git@github.com:analogueshifts/jobs.analogueshifts.com.git --port 3001
+
+Example (app with auth redirect variables):
+  sudo bash deploy/bootstrap-vps-frontend.sh --app-name resume-frontend --domain resume.analogueshifts.com --api-url https://api.analogueshifts.com --repo git@github.com:analogueshifts/resume.analogueshifts.com.git --port 3001 --auth-url https://auth.analogueshifts.com --site-id resume
 
 EOF
 }
@@ -62,6 +69,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --repo)
       REPO_URL="$2"
+      shift 2
+      ;;
+    --auth-url)
+      AUTH_URL="$2"
+      shift 2
+      ;;
+    --site-id)
+      SITE_BUILD_UUID="$2"
       shift 2
       ;;
     --app-dir)
@@ -150,11 +165,38 @@ else
 fi
 
 echo "[5/9] Writing production environment"
+EXISTING_AUTH_URL=""
+EXISTING_SITE_BUILD_UUID=""
+
+if [[ -f "$APP_DIR/.env.production" ]]; then
+  EXISTING_AUTH_URL=$(grep -E '^NEXT_PUBLIC_AUTH_URL=' "$APP_DIR/.env.production" | tail -n 1 | cut -d '=' -f2- || true)
+  EXISTING_SITE_BUILD_UUID=$(grep -E '^NEXT_PUBLIC_SITE_BUILD_UUID=' "$APP_DIR/.env.production" | tail -n 1 | cut -d '=' -f2- || true)
+fi
+
+FINAL_AUTH_URL="$AUTH_URL"
+FINAL_SITE_BUILD_UUID="$SITE_BUILD_UUID"
+
+if [[ -z "$FINAL_AUTH_URL" ]]; then
+  FINAL_AUTH_URL="$EXISTING_AUTH_URL"
+fi
+
+if [[ -z "$FINAL_SITE_BUILD_UUID" ]]; then
+  FINAL_SITE_BUILD_UUID="$EXISTING_SITE_BUILD_UUID"
+fi
+
 cat > "$APP_DIR/.env.production" <<EOF
 NEXT_PUBLIC_BACKEND_URL=$API_URL
 PORT=$PORT
 NODE_ENV=production
 EOF
+
+if [[ -n "$FINAL_AUTH_URL" ]]; then
+  echo "NEXT_PUBLIC_AUTH_URL=$FINAL_AUTH_URL" >> "$APP_DIR/.env.production"
+fi
+
+if [[ -n "$FINAL_SITE_BUILD_UUID" ]]; then
+  echo "NEXT_PUBLIC_SITE_BUILD_UUID=$FINAL_SITE_BUILD_UUID" >> "$APP_DIR/.env.production"
+fi
 
 echo "[6/9] Building Next.js app"
 npm run build
