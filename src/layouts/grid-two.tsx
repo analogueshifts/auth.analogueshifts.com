@@ -17,7 +17,7 @@ export default function LayoutGridTwo({
       >
         <Link
           className="large:mb-14 mb-8"
-          href="httpe://www.analogueshifts.com"
+          href="https://www.analogueshifts.com"
         >
           <Image src={Logo} alt="" className="w-max large:h-max h-9" />
         </Link>
