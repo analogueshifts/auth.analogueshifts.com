@@ -125,9 +125,19 @@ export const useAuth = () => {
     }
   };
 
-  const validateGoogleLogin = async ({ code }: { code: string }) => {
+  const validateGoogleLogin = async ({
+    code,
+    state,
+  }: {
+    code: string;
+    state?: string;
+  }) => {
+    const params = new URLSearchParams({ code });
+    if (state) {
+      params.set("state", state);
+    }
     const config = {
-      url: "/auth/google/callback?code=" + code,
+      url: "/auth/google/callback?" + params.toString(),
       method: "GET",
     };
     try {

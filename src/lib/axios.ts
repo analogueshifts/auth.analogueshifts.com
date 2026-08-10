@@ -6,7 +6,7 @@ const axios = Axios.create({
   headers: {
     Accept: "application/json",
   },
-  // withCredentials: true,
+  withCredentials: true,
 });
 
 export default axios;

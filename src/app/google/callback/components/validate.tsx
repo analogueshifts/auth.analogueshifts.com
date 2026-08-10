@@ -6,13 +6,14 @@ import { useAuth } from "@/hooks/auth";
 export default function Validate() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
+  const state = searchParams.get("state");
   const router = useRouter();
 
   const { validateGoogleLogin } = useAuth();
 
   useEffect(() => {
     if (code) {
-      validateGoogleLogin({ code: code });
+      validateGoogleLogin({ code, state: state ?? undefined });
     } else {
       router.push("/login");
     }
